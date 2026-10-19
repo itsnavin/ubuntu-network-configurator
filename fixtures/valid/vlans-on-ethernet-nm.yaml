@@ -1,0 +1,24 @@
+# Generated offline by Ubuntu Network Configurator. REVIEW BEFORE USE.
+# This file is merged with every other file in /etc/netplan, /run/netplan and /lib/netplan.
+# Validate with "sudo netplan generate", test with "sudo netplan try" from a local console.
+# Install with permissions 600 (root only): it may contain Wi-Fi passwords.
+network:
+  version: 2
+  renderer: "NetworkManager"
+  ethernets:
+    "enp3s0":
+      dhcp4: true
+      dhcp6: false
+  vlans:
+    "vlan20":
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - "10.20.0.5/24"
+      id: 20
+      link: "enp3s0"
+    "enp3s0.30":
+      dhcp4: true
+      dhcp6: false
+      id: 30
+      link: "enp3s0"

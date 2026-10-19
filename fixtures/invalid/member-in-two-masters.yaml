@@ -1,0 +1,13 @@
+# Expected: rejected. eth0 cannot be in a bond and a bridge at once.
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: false
+  bonds:
+    bond0:
+      interfaces: ["eth0"]
+  bridges:
+    br0:
+      interfaces: ["eth0"]

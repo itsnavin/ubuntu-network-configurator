@@ -1,0 +1,8 @@
+# Expected: rejected. VLAN without a parent link.
+network:
+  version: 2
+  renderer: networkd
+  vlans:
+    vlan10:
+      id: 10
+      addresses: ["10.10.0.2/24"]

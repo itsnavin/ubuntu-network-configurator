@@ -1,0 +1,64 @@
+# Generated offline by Ubuntu Network Configurator. REVIEW BEFORE USE.
+# This file is merged with every other file in /etc/netplan, /run/netplan and /lib/netplan.
+# Validate with "sudo netplan generate", test with "sudo netplan try" from a local console.
+# Install with permissions 600 (root only): it may contain Wi-Fi passwords.
+network:
+  version: 2
+  renderer: "networkd"
+  ethernets:
+    "lan":
+      match:
+        macaddress: "52:54:00:12:34:56"
+      set-name: "lan0"
+      macaddress: "52:54:00:aa:bb:cc"
+      mtu: 9000
+      optional: true
+      dhcp4: true
+      dhcp6: true
+      dhcp-identifier: "mac"
+      dhcp4-overrides:
+        use-dns: false
+        use-ntp: false
+        use-domains: "route"
+        use-hostname: false
+        send-hostname: true
+        hostname: "server-01"
+        use-mtu: true
+        use-routes: true
+        route-metric: 50
+      dhcp6-overrides:
+        use-dns: false
+        use-ntp: false
+        use-domains: "route"
+        use-hostname: false
+        send-hostname: true
+        hostname: "server-01"
+        use-mtu: true
+        use-routes: true
+        route-metric: 50
+      accept-ra: true
+      link-local:
+        - "ipv4"
+        - "ipv6"
+      ipv6-privacy: true
+      ipv6-address-generation: "stable-privacy"
+      addresses:
+        - "10.0.0.10/24"
+        - "fd00:10::10/64"
+      nameservers:
+        search:
+          - "example.lan"
+          - "no"
+        addresses:
+          - "10.0.0.53"
+          - "fd00:10::53"
+      routes:
+        - to: "172.16.0.0/12"
+          via: "10.0.0.254"
+          metric: 0
+        - to: "192.168.200.0/24"
+          via: "10.0.0.253"
+          metric: 300
+          table: 100
+        - to: "fd00:99::/48"
+          via: "fe80::1"

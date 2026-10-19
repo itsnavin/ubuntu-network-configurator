@@ -1,0 +1,24 @@
+# Generated offline by Ubuntu Network Configurator. REVIEW BEFORE USE.
+# This file is merged with every other file in /etc/netplan, /run/netplan and /lib/netplan.
+# Validate with "sudo netplan generate", test with "sudo netplan try" from a local console.
+# Install with permissions 600 (root only): it may contain Wi-Fi passwords.
+network:
+  version: 2
+  renderer: "networkd"
+  ethernets:
+    "eth0":
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - "203.0.113.77/32"
+        - "2001:db8:77::2/128"
+      nameservers:
+        addresses:
+          - "1.1.1.1"
+          - "2606:4700:4700::1111"
+      routes:
+        - to: "default"
+          via: "172.31.1.1"
+          on-link: true
+        - to: "default"
+          via: "fe80::1"

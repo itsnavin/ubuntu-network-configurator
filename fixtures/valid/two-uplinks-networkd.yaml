@@ -1,0 +1,19 @@
+# Generated offline by Ubuntu Network Configurator. REVIEW BEFORE USE.
+# This file is merged with every other file in /etc/netplan, /run/netplan and /lib/netplan.
+# Validate with "sudo netplan generate", test with "sudo netplan try" from a local console.
+# Install with permissions 600 (root only): it may contain Wi-Fi passwords.
+network:
+  version: 2
+  renderer: "networkd"
+  ethernets:
+    "enp3s0":
+      dhcp4: true
+      dhcp6: false
+      dhcp4-overrides:
+        route-metric: 100
+    "enp4s0":
+      dhcp4: true
+      dhcp6: false
+      dhcp4-overrides:
+        use-dns: false
+        route-metric: 200

@@ -1,0 +1,32 @@
+name: Netplan generate (isolated)
+
+# Validates committed fixtures with the real netplan parser/generator in disposable
+# Ubuntu containers. Uses only `netplan generate --root-dir <tmp>`; never apply/try.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    name: netplan generate on ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ['ubuntu:22.04', 'ubuntu:24.04', 'ubuntu:26.04']
+    container:
+      image: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install netplan.io (inside the throw-away container only)
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends netplan.io >/dev/null
+      - name: Run netplan generate against fixtures in a temp root dir
+        run: bash scripts/netplan-generate-fixtures.sh

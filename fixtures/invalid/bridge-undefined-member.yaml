@@ -1,0 +1,11 @@
+# Expected: rejected. Bridge member eth9 is not defined.
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: false
+  bridges:
+    br0:
+      interfaces: ["eth0", "eth9"]
+      dhcp4: true

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="description" content="Offline, private Ubuntu Netplan YAML builder for static and DHCP IPv4/IPv6, Wi-Fi, bridges, bonds and VLANs, with validation and a safe install and rollback guide." />
+    <title>Ubuntu Network Configurator — Netplan YAML builder</title>
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <div class="wrap">
+        <h1>Ubuntu Network Configurator</h1>
+        <p class="tagline">Build a reviewed Netplan YAML file for static or DHCP networking on Ubuntu — Ethernet, Wi-Fi, IPv4/IPv6, DNS, routes, bridges, bonds and VLANs.</p>
+        <nav aria-label="Sections">
+          <ul class="nav">
+            <li><a href="#start">1. Before you start</a></li>
+            <li><a href="#global">2. Global settings</a></li>
+            <li><a href="#interfaces">3. Interfaces</a></li>
+            <li><a href="#review">4. Review &amp; export</a></li>
+            <li><a href="#guide">5. Install &amp; rollback</a></li>
+            <li><a href="#compat">6. Compatibility</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="wrap" tabindex="-1">
+      <div class="privacy" role="note">
+        <strong>Runs entirely in your browser.</strong> This page cannot see your network interfaces, does not run commands, and never applies any configuration. Nothing you type (including Wi-Fi passwords) is stored, logged or sent anywhere; reloading the page clears everything. The generated file is a starting point that <em>you</em> must review — it is not guaranteed to be correct or safe for your network.
+      </div>
+
+      <section id="start" aria-labelledby="start-h" class="card">
+        <h2 id="start-h">1. Before you start: discover your interfaces (read-only)</h2>
+        <p>Run these on the Ubuntu machine to find interface names, MAC addresses, current addresses and routes, and which back end is in use. They only display information. Use the real names they show instead of the examples on this page.</p>
+        <ol id="discovery-list" class="cmds"></ol>
+        <p class="help">Placeholders like <code>&lt;INTERFACE&gt;</code> must be replaced by you. <code>sudo netplan get</code> prints any stored Wi-Fi passwords to your terminal.</p>
+      </section>
+
+      <section id="global" aria-labelledby="global-h" class="card">
+        <h2 id="global-h">2. Global settings</h2>
+        <div class="preset">
+          <label for="preset-select" class="field-label">Start from an example (optional)</label>
+          <div class="btn-row">
+            <select id="preset-select" aria-describedby="preset-desc"></select>
+            <button type="button" class="btn" id="preset-load">Load example</button>
+          </div>
+          <p class="help" id="preset-desc"></p>
+        </div>
+        <div id="global-body" class="grid-2"></div>
+      </section>
+
+      <section id="interfaces" aria-labelledby="interfaces-h" class="card">
+        <h2 id="interfaces-h">3. Interfaces</h2>
+        <p>Add each physical interface you want Netplan to manage, then any virtual devices built on them. Bridges and bonds take their members' place: put addresses on the bridge/bond, not on its members.</p>
+        <div class="iface-layout">
+          <div class="iface-list">
+            <h3 id="devlist-h">Configured interfaces</h3>
+            <ul id="device-list" class="device-list" aria-labelledby="devlist-h"></ul>
+            <div class="add-buttons" role="group" aria-label="Add interface">
+              <button type="button" class="btn" id="add-ethernet">+ Ethernet</button>
+              <button type="button" class="btn" id="add-wifi">+ Wi-Fi</button>
+              <button type="button" class="btn" id="add-bridge">+ Bridge</button>
+              <button type="button" class="btn" id="add-bond">+ Bond</button>
+              <button type="button" class="btn" id="add-vlan">+ VLAN</button>
+            </div>
+          </div>
+          <div id="editor" class="iface-editor" aria-live="off"></div>
+        </div>
+      </section>
+
+      <section id="review" aria-labelledby="review-h" class="card">
+        <h2 id="review-h">4. Review &amp; export</h2>
+        <h3 id="issues-h">Checks</h3>
+        <p id="issue-summary" class="issue-summary" role="status" aria-live="polite"></p>
+        <ul id="issue-list" class="issue-list" aria-labelledby="issues-h"></ul>
+        <p class="help">These checks are offline and syntactic: they cannot tell whether your gateway exists, whether a cable is plugged in, or whether the switch carries your VLAN.</p>
+
+        <h3 id="yaml-h">YAML preview</h3>
+        <p id="yaml-state" class="state"></p>
+        <pre id="yaml-preview" class="yaml" tabindex="0" aria-labelledby="yaml-h"></pre>
+
+        <div id="secrets-ack" class="warning" hidden>
+          <p><strong>This configuration contains Wi-Fi passwords.</strong> The exported file contains them in plain text. Netplan files must be readable only by root (<code>chmod 600</code>). Clipboard managers and synced clipboards may keep copies; downloads may be synced by your browser or cloud storage.</p>
+          <div class="check-row">
+            <input type="checkbox" id="ack-secrets" />
+            <label for="ack-secrets">I understand: include the real Wi-Fi passwords in the copied/downloaded file.</label>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="copy-yaml">Copy YAML</button>
+          <button type="button" class="btn btn-primary" id="download-yaml">Download <span id="download-name"></span></button>
+        </div>
+        <p id="gate-reason" class="help"></p>
+      </section>
+
+      <section id="guide" aria-labelledby="guide-h" class="card">
+        <h2 id="guide-h">5. Install, test and roll back safely</h2>
+        <div class="warning" role="note">
+          <p><strong>Never apply network changes blindly, especially over SSH.</strong> Read every command before running it. This page never runs anything. Have console or out-of-band access ready.</p>
+        </div>
+        <ul class="facts">
+          <li><strong>Files merge.</strong> Your file is combined with every other Netplan file; later files (by name) override earlier ones. It is not an isolated replacement. <a id="doc-structure" target="_blank" rel="noopener noreferrer">Netplan: YAML structure &amp; merging</a></li>
+          <li><strong>cloud-init.</strong> On cloud and many server installs, cloud-init writes <code>50-cloud-init.yaml</code> and may regenerate it at boot. Do not blindly disable cloud-init networking; follow your platform's documentation. <a id="doc-cloudinit" target="_blank" rel="noopener noreferrer">cloud-init network configuration</a></li>
+          <li><strong>NetworkManager.</strong> On Ubuntu Desktop, connections created in the GUI may be stored as <code>90-NM-*.yaml</code> and override earlier files.</li>
+          <li><strong><code>netplan generate</code></strong> checks syntax and schema and writes back-end files; it does not prove the network works. <a id="doc-generate" target="_blank" rel="noopener noreferrer">netplan generate</a></li>
+          <li><strong><code>netplan try</code></strong> reverts automatically after a timeout, but has limitations with virtual devices (bridges/bonds/VLANs) and the revert should be verified. It is a safety net, not a guarantee. <a id="doc-try" target="_blank" rel="noopener noreferrer">netplan try manual</a></li>
+          <li><strong>Back ends.</strong> networkd needs systemd-networkd running; NetworkManager needs the network-manager package and service; Wi-Fi with networkd needs wpasupplicant. This page does not install packages or change services.</li>
+          <li><strong>Not a router.</strong> Netplan configures this machine's interfaces. It does not provide a DHCP server, NAT, IP forwarding or a firewall.</li>
+        </ul>
+        <ol id="guide-steps" class="steps"></ol>
+        <h3>Troubleshooting (read-only)</h3>
+        <ol id="troubleshoot-list" class="cmds"></ol>
+      </section>
+
+      <section id="compat" aria-labelledby="compat-h" class="card">
+        <h2 id="compat-h">6. Compatibility &amp; scope</h2>
+        <p>Sources: <a id="doc-yaml" target="_blank" rel="noopener noreferrer">Netplan YAML reference</a>, <a id="doc-ubuntu" target="_blank" rel="noopener noreferrer">Ubuntu Server networking</a>, <a id="doc-packages" target="_blank" rel="noopener noreferrer">Ubuntu netplan.io packages</a>, <a id="doc-security" target="_blank" rel="noopener noreferrer">Netplan security</a>.</p>
+        <div class="table-wrap"><table id="release-table"></table></div>
+        <div class="table-wrap"><table id="compat-table"></table></div>
+        <h3>Deliberately not supported</h3>
+        <ul id="not-supported"></ul>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>Static, offline tool. No analytics, no cookies, no network requests. Not affiliated with Canonical. Always verify against the official Netplan documentation for your installed version (<code>netplan --version</code> or <code>dpkg -s netplan.io</code>).</p>
+      </div>
+    </footer>
+
+    <div id="status" class="visually-hidden" role="status" aria-live="polite"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

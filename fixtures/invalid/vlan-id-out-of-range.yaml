@@ -1,0 +1,11 @@
+# Expected: rejected. VLAN IDs are 0-4094.
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: true
+  vlans:
+    vlan4095:
+      id: 4095
+      link: "eth0"

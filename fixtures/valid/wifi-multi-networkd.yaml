@@ -1,0 +1,27 @@
+# Generated offline by Ubuntu Network Configurator. REVIEW BEFORE USE.
+# This file is merged with every other file in /etc/netplan, /run/netplan and /lib/netplan.
+# Validate with "sudo netplan generate", test with "sudo netplan try" from a local console.
+# Install with permissions 600 (root only): it may contain Wi-Fi passwords.
+network:
+  version: 2
+  renderer: "networkd"
+  wifis:
+    "wlan0":
+      dhcp4: true
+      dhcp6: true
+      access-points:
+        "HomeWPA3":
+          auth:
+            key-management: "sae"
+            password: "correct horse battery staple"
+        "0123":
+          auth:
+            key-management: "psk"
+            password: "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          hidden: true
+          band: "5GHz"
+          channel: 36
+          bssid: "02:00:00:aa:bb:cc"
+        "no":
+          band: "2.4GHz"
+          channel: 6

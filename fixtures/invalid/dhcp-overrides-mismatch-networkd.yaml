@@ -1,0 +1,12 @@
+# Expected: rejected. networkd requires identical dhcp4/dhcp6 overrides.
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: true
+      dhcp6: true
+      dhcp4-overrides:
+        route-metric: 100
+      dhcp6-overrides:
+        route-metric: 200
