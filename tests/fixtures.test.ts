@@ -28,7 +28,7 @@ describe('committed netplan fixtures', () => {
     expect(readdirSync(VALID).filter((f) => f.endsWith('.yaml') && !names.has(f))).toEqual([]);
   });
   it('every fixture (valid and invalid) is well-formed YAML with unique keys', () => {
-    for (const dir of [VALID, INVALID]) {
+    for (const dir of [VALID, INVALID, 'fixtures/warn']) {
       for (const f of readdirSync(dir).filter((x) => x.endsWith('.yaml'))) {
         const doc = parseDocument(readFileSync(join(dir, f), 'utf8'), { uniqueKeys: true, strict: true });
         expect(doc.errors, `${dir}/${f}`).toEqual([]);

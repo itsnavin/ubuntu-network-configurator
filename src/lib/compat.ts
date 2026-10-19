@@ -69,7 +69,7 @@ export const COMPAT: CompatRow[] = [
   { key: 'accept-ra', area: 'IPv6', networkd: 'yes', nm: 'yes', since: '≤0.104', note: 'Unset = kernel default.' },
   { key: 'link-local', area: 'IPv6/IPv4', networkd: 'yes', nm: 'partial', since: '≤0.104', note: 'On NetworkManager, enabling link-local has no effect if DHCP is also enabled.' },
   { key: 'ipv6-privacy', area: 'IPv6', networkd: 'yes', nm: 'yes', since: '≤0.104', note: 'RFC 4941 temporary addresses.' },
-  { key: 'ipv6-address-generation', area: 'IPv6', networkd: 'yes', nm: 'yes', since: '0.99', note: 'eui64 or stable-privacy.' },
+  { key: 'ipv6-address-generation', area: 'IPv6', networkd: 'no', nm: 'yes', since: '0.99', note: 'eui64 or stable-privacy. Documented as NetworkManager-only; netplan 0.107 rejects it with networkd.' },
   { key: 'match: macaddress / name', area: 'Physical', networkd: 'yes', nm: 'partial', since: '≤0.104', note: 'NetworkManager supports name matching as of v1.14. Name globs are allowed.' },
   { key: 'set-name', area: 'Physical', networkd: 'yes', nm: 'partial', since: '≤0.104', note: 'Requires match. Renaming is performed via udev; verify behaviour with your renderer.' },
   { key: 'macaddress (set)', area: 'Physical', networkd: 'yes', nm: 'yes', since: '≤0.104', note: 'Match by MAC when setting a MAC with networkd (udev rename interaction).' },

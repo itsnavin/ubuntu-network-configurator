@@ -213,8 +213,8 @@ export function renderEditor(ctx: EditorCtx, d: Device): HTMLElement {
       selectField({
         key: K('ipv6AddressGeneration'),
         label: 'SLAAC address generation (ipv6-address-generation)',
-        help: 'How the interface part of SLAAC addresses is built: eui64 (from the MAC) or stable-privacy (stable but not derived from the MAC).',
-        badges: [SINCE('0.99'), BOTH()],
+        help: 'How the interface part of SLAAC addresses is built: eui64 (from the MAC) or stable-privacy (stable but not derived from the MAC). NetworkManager only.',
+        badges: [SINCE('0.99'), badge('NetworkManager only', 'nm')],
         value: d.ipv6AddressGeneration,
         options: [
           ['default', 'Not set (back-end default)'],

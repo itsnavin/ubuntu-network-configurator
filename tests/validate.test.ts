@@ -257,3 +257,15 @@ describe('graph topology', () => {
     expect(hasErr(cfgOf([newDevice('bridge', 'br0', { bridgeForwardDelay: '31' })]), /bridgeForwardDelay$/)).toBe(true);
   });
 });
+
+describe('renderer restrictions confirmed by real netplan', () => {
+  it('rejects ipv6-address-generation with networkd but allows it with NetworkManager', () => {
+    const d = () => newDevice('ethernet', 'eth0', { ipv6AddressGeneration: 'eui64' });
+    expect(hasErr(cfgOf([d()]), /ipv6AddressGeneration$/)).toBe(true);
+    expect(hasErr(cfgOf([d()], { renderer: 'NetworkManager' }), /ipv6AddressGeneration$/)).toBe(false);
+  });
+  it('explains that routes without via are an app restriction, not a netplan error', () => {
+    const d = newDevice('ethernet', 'eth0', { addresses: ['192.168.1.2/24'], routes: [newRoute({ to: '10.0.0.0/8' })] });
+    expect(hasErr(cfgOf([d]), /\.via$/, /Netplan itself accepts/)).toBe(true);
+  });
+});

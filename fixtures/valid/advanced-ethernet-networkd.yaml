@@ -41,7 +41,6 @@ network:
         - "ipv4"
         - "ipv6"
       ipv6-privacy: true
-      ipv6-address-generation: "stable-privacy"
       addresses:
         - "10.0.0.10/24"
         - "fd00:10::10/64"

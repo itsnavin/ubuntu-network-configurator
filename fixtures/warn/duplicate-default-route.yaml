@@ -1,4 +1,4 @@
-# Expected: rejected. Two default IPv4 routes in the main table with the same metric.
+# Expected: accepted, but netplan warns about conflicting default routes (same family, table and metric).
 network:
   version: 2
   renderer: networkd

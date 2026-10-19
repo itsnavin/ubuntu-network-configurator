@@ -205,6 +205,8 @@ export function validate(cfg: Config): Issue[] {
     }
 
     if (d.optional && nm) err('optional', '"optional" is only supported by networkd. Turn it off or switch renderer.');
+    if (d.ipv6AddressGeneration !== 'default' && !nm)
+      err('ipv6AddressGeneration', 'The Netplan reference lists ipv6-address-generation as NetworkManager-only. netplan 0.107 (Ubuntu 22.04) rejects it with networkd. Leave it unset or switch renderer.');
 
     // Membership checks
     const myOwners = owners.get(d.uid) ?? [];
@@ -334,7 +336,12 @@ export function validate(cfg: Config): Issue[] {
         if (toNet && toNet.family !== via.family) return err(f('via'), 'Gateway and destination must be the same IP family.');
         if (myCidrs.some((c) => c.family === via!.family && c.value === via!.value)) return err(f('via'), 'The gateway is this interface\'s own address.');
       } else {
-        return err(f('via'), to === 'default' ? 'A default route needs a gateway (via).' : 'A route needs a gateway (via). Networks directly on this link are already reachable through the interface address and need no route.');
+        return err(
+          f('via'),
+          to === 'default'
+            ? 'A default route needs a gateway (via).'
+            : 'This app requires a gateway (via) for every route. Netplan itself accepts a route without via (a directly attached "scope link" route), but networks on this link are already reachable through the interface address, so such a route is rarely needed and is not offered here.',
+        );
       }
       const fam = routeFamily(r);
       if (fam === 4 && !hasV4) err(f('to'), 'This IPv4 route is on an interface with no IPv4 address or DHCPv4.');
@@ -537,7 +544,7 @@ export function validate(cfg: Config): Issue[] {
           'error',
           f,
           rk.isDefault
-            ? `A second IPv${rk.fam} default route with the same table and metric (also on ${where}). Netplan rejects conflicting default routes. Keep one, or give them different metrics (lower = preferred).`
+            ? `A second IPv${rk.fam} default route with the same table and metric (also on ${where}). Netplan only warns about conflicting default routes, but which gateway is used becomes unpredictable. Keep one, or give them different metrics (lower = preferred).`
             : `Duplicate route to ${rk.r.to} with the same metric and table (also on ${where}). This is ambiguous; give them different metrics or remove one.`,
           rk.dev.uid,
         );

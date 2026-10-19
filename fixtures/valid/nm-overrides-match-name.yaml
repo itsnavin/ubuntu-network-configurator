@@ -16,6 +16,7 @@ network:
         route-metric: 700
       dhcp6-overrides:
         route-metric: 800
+      ipv6-address-generation: "stable-privacy"
       routes:
         - to: "10.99.0.0/16"
           via: "192.168.1.1"

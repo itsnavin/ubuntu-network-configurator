@@ -51,7 +51,9 @@ describe('DHCP and static addressing', () => {
     expect(e['accept-ra']).toBe(true);
     expect(e['link-local']).toEqual(['ipv4', 'ipv6']);
     expect(e['ipv6-privacy']).toBe(true);
-    expect(e['ipv6-address-generation']).toBe('stable-privacy');
+    expect(e['ipv6-address-generation']).toBeUndefined();
+    const nm = gen(SCENARIOS.find((s) => s.name === 'nm-overrides-match-name')!.build());
+    expect(nm.network.ethernets.uplink['ipv6-address-generation']).toBe('stable-privacy');
     expect(e.match).toEqual({ macaddress: '52:54:00:12:34:56' });
     expect(e['set-name']).toBe('lan0');
     expect(e.mtu).toBe(9000);

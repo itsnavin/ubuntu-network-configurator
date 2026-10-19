@@ -67,5 +67,20 @@ for f in fixtures/invalid/*.yaml; do
 done
 
 echo
+echo "== Warning fixtures: accepted, but netplan must print a warning =="
+for f in fixtures/warn/*.yaml; do
+  if root="$(run_one "$f")"; then
+    if grep -qi 'conflicting default route' "$root/out.log"; then
+      echo "ok   $f accepted with warning: $(grep -i 'conflicting default route' "$root/out.log" | head -n 1 | cut -c1-220)"
+    else
+      echo "FAIL (no warning): $f"; sed 's/^/       /' "$root/out.log"; fail=1
+    fi
+  else
+    echo "FAIL (rejected): $f"; sed 's/^/       /' "$root/out.log"; fail=1
+  fi
+  rm -rf "$root"
+done
+
+echo
 if [ "$fail" -ne 0 ]; then echo "netplan fixture check FAILED"; exit 1; fi
 echo "All fixtures behaved as expected. (No configuration was applied anywhere.)"
