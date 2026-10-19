@@ -8,7 +8,8 @@ async function open(page: Page) {
   const origin = new URL(test.info().project.use.baseURL!).origin;
   page.on('request', (r) => {
     const u = r.url();
-    if (!u.startsWith(origin) && !/^(data|blob):/.test(u)) foreign.push(u);
+    // local.adguard.org: injected by a system-wide ad blocker on some developer machines, not by the app.
+    if (!u.startsWith(origin) && !/^(data|blob):/.test(u) && !u.startsWith('http://local.adguard.org/')) foreign.push(u);
   });
   page.on('dialog', (d) => d.accept());
   await page.goto('./');
@@ -150,7 +151,7 @@ test('Wi-Fi password is hidden, masked in preview, and gated behind an acknowled
   const [dl] = await Promise.all([page.waitForEvent('download'), page.locator('#download-yaml').click()]);
   const text = readFileSync((await dl.path())!, 'utf8');
   expect(text).toContain(`password: "s3cr3t \\"pa:ss\\" #'x"`);
-  expect(text).toContain('chmod 600');
+  expect(text).toContain('permissions 600');
 
   // Nothing persisted anywhere the page can reach.
   const persisted = await page.evaluate(async () => {
@@ -167,7 +168,8 @@ test('copy puts exactly the reviewed YAML on the clipboard', async ({ page, cont
   await page.locator('#copy-yaml').click();
   await expect(page.locator('#status')).toContainText('copied');
   const clip = await page.evaluate(() => navigator.clipboard.readText());
-  expect(clip).toBe(await preview(page).textContent());
+  // Windows clipboards convert line endings; compare the text itself.
+  expect(clip.replace(/\r\n/g, '\n')).toBe(await preview(page).textContent());
   expect(clip).toContain('dhcp6:');
 });
 
